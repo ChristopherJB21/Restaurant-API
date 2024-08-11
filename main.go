@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 
-	_ "net/http/pprof"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
@@ -28,10 +26,6 @@ func main() {
 		Addr:    viper.GetString("server.addr"),
 		Handler: middleware.NewMiddleware(router, validate),
 	}
-
-	go func() {
-		log.Println(http.ListenAndServe("0.0.0.0:6060", nil))
-	}()
 
 	log.Println(viper.GetString("appName") + " Application Start")
 	err := server.ListenAndServe()
