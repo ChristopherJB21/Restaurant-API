@@ -14,7 +14,9 @@ import (
 func NewDB() *gorm.DB {
 	dsn := viper.GetString("database.dsn")
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt: true,
+	})
 	helper.PanicIfError(err)
 
 	sqlDB, err := db.DB()

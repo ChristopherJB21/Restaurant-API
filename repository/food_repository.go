@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	model "restaurant/model/food"
-	"restaurant/helper"
 	"errors"
+	"restaurant/helper"
+	model "restaurant/model/food"
 
 	"gorm.io/gorm"
 )
@@ -30,7 +30,7 @@ func NewFoodRepository(DB *gorm.DB) IFoodRepository {
 func (repository *FoodRepository) FindAll(ctx context.Context, limit int, offset int) ([]model.Food, error) {
 	var foods []model.Food
 
-	result := repository.DB.Preload("Cuisine").Limit(limit).Offset(offset).Find(&foods)
+	result := repository.DB.Joins("Cuisine").Limit(limit).Offset(offset).Find(&foods)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) || len(foods) < 1 {
 		return foods, errors.New("foods are not found")
@@ -44,7 +44,7 @@ func (repository *FoodRepository) FindAll(ctx context.Context, limit int, offset
 func (repository *FoodRepository) FindById(ctx context.Context, IDFood uint) (model.Food, error) {
 	var food model.Food
 
-	result := repository.DB.Preload("Cuisine").First(&food, IDFood)
+	result := repository.DB.Joins("Cuisine").First(&food, IDFood)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return food, errors.New("food is not found")
