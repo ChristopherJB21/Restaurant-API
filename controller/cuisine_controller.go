@@ -1,9 +1,10 @@
 package controller
 
 import (
+	"crypto/rsa"
 	"net/http"
-	model "restaurant/model/cuisine"
 	"restaurant/helper"
+	model "restaurant/model/cuisine"
 	"restaurant/model/web"
 	"restaurant/service"
 	"strconv"
@@ -23,11 +24,13 @@ type ICuisineController interface {
 
 type CuisineController struct {
 	CuisineService service.ICuisineService
+	RSAPublicKey *rsa.PublicKey
 }
 
-func NewCuisineController(cuisineService service.ICuisineService) ICuisineController {
+func NewCuisineController(cuisineService service.ICuisineService, rSAPublicKey *rsa.PublicKey) ICuisineController {
 	return &CuisineController{
 		CuisineService: cuisineService,
+		RSAPublicKey: rSAPublicKey,
 	}
 }
 
@@ -38,7 +41,7 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 	err := decoder.Decode(result)
 	helper.PanicIfError(err)
 
-	username := helper.GetUsername(request)
+	username := helper.GetUsername(request, controller.RSAPublicKey)
 	cuisineCreateRequest.CreatedBy = username
 	cuisineCreateRequest.UpdatedBy = username
 
@@ -59,7 +62,7 @@ func (controller *CuisineController) Delete(writer http.ResponseWriter, request 
 
 	cuisineDeleteRequest := model.CuisineDeleteRequest{}
 	cuisineDeleteRequest.IDCuisine = uint(id)
-	cuisineDeleteRequest.DeletedBy = helper.GetUsername(request)
+	cuisineDeleteRequest.DeletedBy = helper.GetUsername(request, controller.RSAPublicKey)
 
 	controller.CuisineService.Delete(request.Context(), cuisineDeleteRequest)
 	webResponse := web.WebResponse{
@@ -125,7 +128,7 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 
 	cuisineUpdateRequest.IDCuisine = uint(id)
 
-	username := helper.GetUsername(request)
+	username := helper.GetUsername(request, controller.RSAPublicKey)
 	cuisineUpdateRequest.UpdatedBy = username
 
 	cuisineResponse := controller.CuisineService.Update(request.Context(), cuisineUpdateRequest)

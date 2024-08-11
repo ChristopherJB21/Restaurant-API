@@ -1,6 +1,7 @@
 package app
 
 import (
+	"crypto/rsa"
 	"restaurant/controller"
 	"restaurant/exception"
 	"restaurant/repository"
@@ -11,21 +12,21 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRouter(DB *gorm.DB, validate *validator.Validate) *httprouter.Router {
+func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) *httprouter.Router {
 	router := httprouter.New()
 
 	router.PanicHandler = exception.ErrorHandler
 
-	NewCuisineRouter(router, DB, validate)
-	NewFoodRouter(router, DB, validate)
+	NewCuisineRouter(router, DB, validate, rSAPublicKey)
+	NewFoodRouter(router, DB, validate, rSAPublicKey)
 
 	return router
 }
 
-func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate) {
+func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) {
 	cuisineRepository := repository.NewCuisineRepository(DB)
 	cuisineService := service.NewCuisineService(cuisineRepository, validate)
-	cuisineController := controller.NewCuisineController(cuisineService)
+	cuisineController := controller.NewCuisineController(cuisineService, rSAPublicKey)
 
 	router.GET("/api/cuisines", cuisineController.FindAll)
 	router.GET("/api/cuisine/:IDCuisine", cuisineController.FindById)
@@ -34,10 +35,10 @@ func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validato
 	router.DELETE("/api/cuisine/:IDCuisine", cuisineController.Delete)
 }
 
-func NewFoodRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate) {
+func NewFoodRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) {
 	foodRepository := repository.NewFoodRepository(DB)
 	foodService := service.NewFoodService(foodRepository, validate)
-	foodController := controller.NewFoodController(foodService)
+	foodController := controller.NewFoodController(foodService, rSAPublicKey)
 		
 	router.GET("/api/foods", foodController.FindAll)
 	router.GET("/api/food/:IDFood", foodController.FindById)

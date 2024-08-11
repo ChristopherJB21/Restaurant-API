@@ -20,11 +20,13 @@ func main() {
 	
 	// redis := app.NewRedis()
 
-	router := app.NewRouter(DB, validate)
+	rSAPublicKey := app.NewRSAPublicKey()
+	
+	router := app.NewRouter(DB, validate, rSAPublicKey)
 
 	server := http.Server{
 		Addr:    viper.GetString("server.addr"),
-		Handler: middleware.NewMiddleware(router, validate),
+		Handler: middleware.NewMiddleware(router, validate, rSAPublicKey),
 	}
 
 	log.Println(viper.GetString("appName") + " Application Start")

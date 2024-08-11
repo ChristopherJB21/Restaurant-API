@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/rsa"
 	"net/http"
 	"restaurant/helper"
 	model "restaurant/model/food"
@@ -21,11 +22,13 @@ type IFoodController interface {
 
 type FoodController struct {
 	FoodService service.IFoodService
+	RSAPublicKey *rsa.PublicKey
 }
 
-func NewFoodController(foodService service.IFoodService) IFoodController {
+func NewFoodController(foodService service.IFoodService, rSAPublicKey *rsa.PublicKey) IFoodController {
 	return &FoodController{
 		FoodService: foodService,
+		RSAPublicKey: rSAPublicKey,
 	}
 }
 
@@ -78,7 +81,7 @@ func (controller *FoodController) Create(writer http.ResponseWriter, request *ht
 	foodCreateRequest := model.FoodCreateRequest{}
 	helper.ReadFromRequestBody(request, &foodCreateRequest)
 
-	username := helper.GetUsername(request)
+	username := helper.GetUsername(request, controller.RSAPublicKey)
 	foodCreateRequest.CreatedBy = username;
 	foodCreateRequest.UpdatedBy = username;
 
@@ -100,7 +103,7 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 	id, err := strconv.ParseUint(IDFood, 10, 64)
 	helper.PanicIfError(err)
 
-	username := helper.GetUsername(request)
+	username := helper.GetUsername(request, controller.RSAPublicKey)
 	foodUpdateRequest.IDFood = uint(id)
 	foodUpdateRequest.UpdatedBy = username
 
@@ -121,7 +124,7 @@ func (controller *FoodController) Delete(writer http.ResponseWriter, request *ht
 
 	foodDeleteRequest := model.FoodDeleteRequest{
 		IDFood: uint(id),
-		DeletedBy: helper.GetUsername(request),
+		DeletedBy: helper.GetUsername(request, controller.RSAPublicKey),
 	}
 
 	controller.FoodService.Delete(request.Context(), foodDeleteRequest)

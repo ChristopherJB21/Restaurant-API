@@ -1,9 +1,9 @@
 package helper
 
 import (
+	"crypto/rsa"
 	"errors"
 	"net/http"
-	"os"
 	model "restaurant/model/web"
 	"strings"
 	"time"
@@ -11,25 +11,19 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GetToken(request *http.Request) (*jwt.Token, error) {
+func GetToken(request *http.Request, rSAPublicKey *rsa.PublicKey) (*jwt.Token, error) {
 	BearerKey := request.Header.Get("Authorization")
 	tokenString := strings.TrimSpace(strings.Replace(BearerKey, "Bearer", "", 1))
 
-	publicKey, err := os.ReadFile("publicKey")
-	PanicIfError(err)
-
-	PublicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKey))
-	PanicIfError(err)
-
 	token, err := jwt.ParseWithClaims(tokenString, &model.SSOClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return PublicKey, nil
+		return rSAPublicKey, nil
 	}, jwt.WithLeeway(5*time.Second))
 
 	return token, err
 }
 
-func VerifyToken(request *http.Request) (err error) {
-	token, err := GetToken(request)
+func VerifyToken(request *http.Request, rSAPublicKey *rsa.PublicKey) (err error) {
+	token, err := GetToken(request, rSAPublicKey)
 
 	if err != nil {
 		return err
@@ -40,8 +34,8 @@ func VerifyToken(request *http.Request) (err error) {
 	return nil
 }
 
-func GetUsername(request *http.Request) (username string) {
-	token, _ := GetToken(request)
+func GetUsername(request *http.Request, rSAPublicKey *rsa.PublicKey) (username string) {
+	token, _ := GetToken(request, rSAPublicKey)
 
 	claims := token.Claims.(*model.SSOClaims)
 

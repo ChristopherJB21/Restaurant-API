@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"crypto/rsa"
 	"net/http"
 	"restaurant/helper"
 	"restaurant/model/web"
@@ -11,17 +12,19 @@ import (
 type Middleware struct {
 	Handler  http.Handler
 	Validate *validator.Validate
+	RSAPublicKey *rsa.PublicKey
 }
 
-func NewMiddleware(handler http.Handler, validate *validator.Validate) *Middleware {
+func NewMiddleware(handler http.Handler, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) *Middleware {
 	return &Middleware{
 		Handler:  handler,
 		Validate: validate,
+		RSAPublicKey: rSAPublicKey,
 	}
 }
 
 func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	err := helper.VerifyToken(request)
+	err := helper.VerifyToken(request, middleware.RSAPublicKey)
 
 	if err != nil {
 		writer.Header().Add("Content-Type", "application/json")
