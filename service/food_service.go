@@ -32,23 +32,23 @@ func NewFoodService(foodRepository repository.IFoodRepository, validate *validat
 }
 
 func (service *FoodService) FindAll(ctx context.Context, limit int, offset int) []model.FoodResponse {
-	// foods, err := service.FoodRepository.FindAll(ctx, limit, offset)
-	// if err != nil {
-	// 	panic(exception.NewNotFoundError(err.Error()))
-	// }
-
-	foods := []model.FoodResponse{}
-
-	for i := 1; i <= 5; i++ {
-		food := model.FoodResponse{}
-		food.IDFood = uint(i)
-		food.FoodName = "Hello World"
-		food.IDCuisine = uint(i + 1)
-		food.CuisineName = "Hai World"
-		foods = append(foods, food)
+	foods, err := service.FoodRepository.FindAll(ctx, limit, offset)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	return foods
+	// foods := []model.FoodResponse{}
+
+	// for i := 1; i <= 5; i++ {
+	// 	food := model.FoodResponse{}
+	// 	food.IDFood = uint(i)
+	// 	food.FoodName = "Hello World"
+	// 	food.IDCuisine = uint(i + 1)
+	// 	food.CuisineName = "Hai World"
+	// 	foods = append(foods, food)
+	// }
+
+	return model.ToFoodResponses(foods)
 }
 
 func (service *FoodService) FindById(ctx context.Context, IDFood uint) model.FoodResponse {
