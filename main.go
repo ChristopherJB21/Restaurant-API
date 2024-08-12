@@ -6,15 +6,12 @@ import (
 	"restaurant/app"
 	"restaurant/helper"
 	"restaurant/middleware"
-	"runtime"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	runtime.GOMAXPROCS(8)
-
 	app.NewViper()
 
 	DB := app.NewDB()
