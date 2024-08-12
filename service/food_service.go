@@ -37,17 +37,6 @@ func (service *FoodService) FindAll(ctx context.Context, limit int, offset int) 
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	// foods := []model.FoodResponse{}
-
-	// for i := 1; i <= 5; i++ {
-	// 	food := model.FoodResponse{}
-	// 	food.IDFood = uint(i)
-	// 	food.FoodName = "Hello World"
-	// 	food.IDCuisine = uint(i + 1)
-	// 	food.CuisineName = "Hai World"
-	// 	foods = append(foods, food)
-	// }
-
 	return model.ToFoodResponses(foods)
 }
 
