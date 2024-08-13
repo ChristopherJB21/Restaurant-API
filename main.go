@@ -26,7 +26,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    viper.GetString("server.addr"),
-		Handler: middleware.NewMiddleware(router, validate, rSAPublicKey),
+		Handler: middleware.NewMiddleware(router, rSAPublicKey),
 	}
 
 	log.Println(viper.GetString("appName") + " Application Start")

@@ -5,25 +5,29 @@ import (
 	"net/http"
 	"restaurant/helper"
 	"restaurant/model/web"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type Middleware struct {
 	Handler      http.Handler
-	Validate     *validator.Validate
 	RSAPublicKey *rsa.PublicKey
 }
 
-func NewMiddleware(handler http.Handler, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) *Middleware {
+func NewMiddleware(handler http.Handler, rSAPublicKey *rsa.PublicKey) *Middleware {
 	return &Middleware{
 		Handler:      handler,
-		Validate:     validate,
 		RSAPublicKey: rSAPublicKey,
 	}
 }
 
 func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	if middleware.Authorization(writer, request){
+		return
+	}
+
+	middleware.Handler.ServeHTTP(writer, request)
+}
+
+func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
 	err := helper.VerifyToken(request, middleware.RSAPublicKey)
 
 	if err != nil {
@@ -38,8 +42,8 @@ func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *htt
 
 		helper.WriteToResponseBody(writer, webResponse)
 
-		return
+		return true
 	}
 
-	middleware.Handler.ServeHTTP(writer, request)
+	return false
 }
