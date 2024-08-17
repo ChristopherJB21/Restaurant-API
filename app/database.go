@@ -7,14 +7,14 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )
 
 func NewDB() *gorm.DB {
 	dsn := viper.GetString("database.dsn")
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
 	})
 	helper.PanicIfError(err)
