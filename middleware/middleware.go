@@ -28,11 +28,13 @@ func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	RequestStatus := web.RequestStatus{ResponseWriter: writer, Status: 200}
+	ResponseStatus := web.ResponseStatus{ResponseWriter: writer, Status: 200}
 
-	middleware.Handler.ServeHTTP(&RequestStatus, request)
+	middleware.PromMonitorBefore(ResponseStatus, request)
+
+	middleware.Handler.ServeHTTP(&ResponseStatus, request)
 
 	duration := time.Since(start).Milliseconds()
 
-	middleware.PromMonitor(RequestStatus, request, float64(duration))
+	middleware.PromMonitorAfter(ResponseStatus, request, float64(duration))
 }

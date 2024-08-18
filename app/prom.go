@@ -14,7 +14,7 @@ import (
 
 func NewMetricPrometheus() *web.MetricPrometheus {
 	metrics := web.MetricPrometheus{
-		RequestCounter:    NewRequestCounter(),
+		RequestGauge:      NewRequestGauge(),
 		DurationHistogram: NewDurationHistogram(),
 	}
 
@@ -35,13 +35,13 @@ func StartPrometheus() {
 	helper.PanicIfError(err)
 }
 
-func NewRequestCounter() *prometheus.CounterVec {
-	requestCounter := promauto.NewCounterVec(
-		prometheus.CounterOpts{
+func NewRequestGauge() *prometheus.GaugeVec {
+	requestCounter := promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
 			Name: "client_request_count",
 			Help: "Total number of requests from client",
 		},
-		[]string{"method", "route", "status"},
+		[]string{"method", "route"},
 	)
 
 	return requestCounter

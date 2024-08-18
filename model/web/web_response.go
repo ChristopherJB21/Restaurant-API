@@ -8,12 +8,12 @@ type WebResponse struct {
 	Data   interface{} `json:"data"`
 }
 
-type RequestStatus struct {
+type ResponseStatus struct {
 	http.ResponseWriter
 	Status int
 }
 
-func (statusRequest *RequestStatus) WriteHeader(code int) {
-	statusRequest.ResponseWriter.WriteHeader(code)
-	statusRequest.Status = code
+func (statusResponse *ResponseStatus) WriteHeader(code int) {
+	statusResponse.ResponseWriter.WriteHeader(code)
+	statusResponse.Status = code
 }
