@@ -24,13 +24,13 @@ type ICuisineController interface {
 
 type CuisineController struct {
 	CuisineService service.ICuisineService
-	RSAPublicKey *rsa.PublicKey
+	RSAPublicKey   *rsa.PublicKey
 }
 
 func NewCuisineController(cuisineService service.ICuisineService, rSAPublicKey *rsa.PublicKey) ICuisineController {
 	return &CuisineController{
 		CuisineService: cuisineService,
-		RSAPublicKey: rSAPublicKey,
+		RSAPublicKey:   rSAPublicKey,
 	}
 }
 
@@ -52,7 +52,7 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -70,7 +70,7 @@ func (controller *CuisineController) Delete(writer http.ResponseWriter, request 
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -99,7 +99,7 @@ func (controller *CuisineController) FindAll(writer http.ResponseWriter, request
 		Data:   cuisineResponses,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -115,7 +115,7 @@ func (controller *CuisineController) FindById(writer http.ResponseWriter, reques
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -138,5 +138,5 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }

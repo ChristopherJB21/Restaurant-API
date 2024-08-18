@@ -17,17 +17,21 @@ func main() {
 	DB := app.NewDB()
 
 	validate := validator.New()
-	
+
 	// redis := app.NewRedis()
 
 	rSAPublicKey := app.NewRSAPublicKey()
-	
+
 	router := app.NewRouter(DB, validate, rSAPublicKey)
+
+	metricPrometheus := app.NewMetricPrometheus()
 
 	server := http.Server{
 		Addr:    viper.GetString("server.addr"),
-		Handler: middleware.NewMiddleware(router, rSAPublicKey),
+		Handler: middleware.NewMiddleware(router, rSAPublicKey, metricPrometheus),
 	}
+
+	go app.StartPrometheus()
 
 	log.Println(viper.GetString("appName") + " Application Start")
 	err := server.ListenAndServe()

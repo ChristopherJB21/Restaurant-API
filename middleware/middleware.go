@@ -3,47 +3,36 @@ package middleware
 import (
 	"crypto/rsa"
 	"net/http"
-	"restaurant/helper"
 	"restaurant/model/web"
+	"time"
 )
 
 type Middleware struct {
-	Handler      http.Handler
-	RSAPublicKey *rsa.PublicKey
+	Handler          http.Handler
+	RSAPublicKey     *rsa.PublicKey
+	MetricPrometheus *web.MetricPrometheus
 }
 
-func NewMiddleware(handler http.Handler, rSAPublicKey *rsa.PublicKey) *Middleware {
+func NewMiddleware(handler http.Handler, rSAPublicKey *rsa.PublicKey, metricPrometheus *web.MetricPrometheus) *Middleware {
 	return &Middleware{
-		Handler:      handler,
-		RSAPublicKey: rSAPublicKey,
+		Handler:          handler,
+		RSAPublicKey:     rSAPublicKey,
+		MetricPrometheus: metricPrometheus,
 	}
 }
 
 func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if middleware.Authorization(writer, request){
+	start := time.Now()
+
+	if middleware.Authorization(writer, request) {
 		return
 	}
 
-	middleware.Handler.ServeHTTP(writer, request)
-}
+	RequestStatus := web.RequestStatus{ResponseWriter: writer, Status: 200}
 
-func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
-	err := helper.VerifyToken(request, middleware.RSAPublicKey)
+	middleware.Handler.ServeHTTP(&RequestStatus, request)
 
-	if err != nil {
-		writer.Header().Add("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusUnauthorized)
+	duration := time.Since(start).Milliseconds()
 
-		webResponse := web.WebResponse{
-			Code:   http.StatusUnauthorized,
-			Status: "UNAUTHORIZED",
-			Data:   err.Error(),
-		}
-
-		helper.WriteToResponseBody(writer, webResponse)
-
-		return true
-	}
-
-	return false
+	middleware.PromMonitor(RequestStatus, request, float64(duration))
 }
