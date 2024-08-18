@@ -12,8 +12,9 @@ func ReadFromRequestBody(request *http.Request, result interface{}) {
 	PanicIfError(err)
 }
 
-func WriteToResponseBody(writer http.ResponseWriter, response interface{}) {
+func WriteToResponseBody(writer http.ResponseWriter, code int, response interface{}) {
 	writer.Header().Add("Content-Type", "application/json")
+	writer.WriteHeader(code)
 	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	PanicIfError(err)
@@ -27,13 +28,13 @@ func ReadFromQueryParams(key string, request *http.Request) (string, error) {
 	return "", errors.New("not found")
 }
 
-func JsonEncode(v any)(string){
+func JsonEncode(v any) string {
 	jsonBytes, err := json.Marshal(v)
 	PanicIfError(err)
 	return string(jsonBytes)
 }
 
-func JsonDecode(v string, result any){
+func JsonDecode(v string, result any) {
 	err := json.Unmarshal([]byte(v), &result)
 	PanicIfError(err)
 }

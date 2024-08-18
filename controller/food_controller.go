@@ -21,13 +21,13 @@ type IFoodController interface {
 }
 
 type FoodController struct {
-	FoodService service.IFoodService
+	FoodService  service.IFoodService
 	RSAPublicKey *rsa.PublicKey
 }
 
 func NewFoodController(foodService service.IFoodService, rSAPublicKey *rsa.PublicKey) IFoodController {
 	return &FoodController{
-		FoodService: foodService,
+		FoodService:  foodService,
 		RSAPublicKey: rSAPublicKey,
 	}
 }
@@ -58,7 +58,7 @@ func (controller *FoodController) FindAll(writer http.ResponseWriter, request *h
 		Data:   foodResponses,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *FoodController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -74,7 +74,7 @@ func (controller *FoodController) FindById(writer http.ResponseWriter, request *
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *FoodController) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -82,8 +82,8 @@ func (controller *FoodController) Create(writer http.ResponseWriter, request *ht
 	helper.ReadFromRequestBody(request, &foodCreateRequest)
 
 	username := helper.GetUsername(request, controller.RSAPublicKey)
-	foodCreateRequest.CreatedBy = username;
-	foodCreateRequest.UpdatedBy = username;
+	foodCreateRequest.CreatedBy = username
+	foodCreateRequest.UpdatedBy = username
 
 	foodResponse := controller.FoodService.Create(request.Context(), foodCreateRequest)
 	webResponse := web.WebResponse{
@@ -92,7 +92,7 @@ func (controller *FoodController) Create(writer http.ResponseWriter, request *ht
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *FoodController) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -114,7 +114,7 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *FoodController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -123,7 +123,7 @@ func (controller *FoodController) Delete(writer http.ResponseWriter, request *ht
 	helper.PanicIfError(err)
 
 	foodDeleteRequest := model.FoodDeleteRequest{
-		IDFood: uint(id),
+		IDFood:    uint(id),
 		DeletedBy: helper.GetUsername(request, controller.RSAPublicKey),
 	}
 
@@ -133,5 +133,5 @@ func (controller *FoodController) Delete(writer http.ResponseWriter, request *ht
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
