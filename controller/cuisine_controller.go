@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"crypto/rsa"
 	"net/http"
 	"restaurant/helper"
 	model "restaurant/model/cuisine"
@@ -24,13 +23,11 @@ type ICuisineController interface {
 
 type CuisineController struct {
 	CuisineService service.ICuisineService
-	RSAPublicKey *rsa.PublicKey
 }
 
-func NewCuisineController(cuisineService service.ICuisineService, rSAPublicKey *rsa.PublicKey) ICuisineController {
+func NewCuisineController(cuisineService service.ICuisineService) ICuisineController {
 	return &CuisineController{
 		CuisineService: cuisineService,
-		RSAPublicKey: rSAPublicKey,
 	}
 }
 
@@ -41,10 +38,6 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 	err := decoder.Decode(result)
 	helper.PanicIfError(err)
 
-	username := helper.GetUsername(request, controller.RSAPublicKey)
-	cuisineCreateRequest.CreatedBy = username
-	cuisineCreateRequest.UpdatedBy = username
-
 	cuisineResponse := controller.CuisineService.Create(request.Context(), cuisineCreateRequest)
 	webResponse := web.WebResponse{
 		Code:   http.StatusAccepted,
@@ -52,7 +45,7 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -62,7 +55,6 @@ func (controller *CuisineController) Delete(writer http.ResponseWriter, request 
 
 	cuisineDeleteRequest := model.CuisineDeleteRequest{}
 	cuisineDeleteRequest.IDCuisine = uint(id)
-	cuisineDeleteRequest.DeletedBy = helper.GetUsername(request, controller.RSAPublicKey)
 
 	controller.CuisineService.Delete(request.Context(), cuisineDeleteRequest)
 	webResponse := web.WebResponse{
@@ -70,7 +62,7 @@ func (controller *CuisineController) Delete(writer http.ResponseWriter, request 
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -99,7 +91,7 @@ func (controller *CuisineController) FindAll(writer http.ResponseWriter, request
 		Data:   cuisineResponses,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -115,7 +107,7 @@ func (controller *CuisineController) FindById(writer http.ResponseWriter, reques
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }
 
 func (controller *CuisineController) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -128,9 +120,6 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 
 	cuisineUpdateRequest.IDCuisine = uint(id)
 
-	username := helper.GetUsername(request, controller.RSAPublicKey)
-	cuisineUpdateRequest.UpdatedBy = username
-
 	cuisineResponse := controller.CuisineService.Update(request.Context(), cuisineUpdateRequest)
 	webResponse := web.WebResponse{
 		Code:   http.StatusAccepted,
@@ -138,5 +127,5 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 		Data:   cuisineResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
 }

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"crypto/rsa"
 	"restaurant/controller"
 	"restaurant/exception"
 	"restaurant/repository"
@@ -12,21 +11,23 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) *httprouter.Router {
+func NewRouter(DB *gorm.DB, validate *validator.Validate) *httprouter.Router {
+	// Prepare HTTP Router
 	router := httprouter.New()
 
+	// Set Panic Handler
 	router.PanicHandler = exception.ErrorHandler
 
-	NewCuisineRouter(router, DB, validate, rSAPublicKey)
-	NewFoodRouter(router, DB, validate, rSAPublicKey)
+	NewCuisineRouter(router, DB, validate)
+	NewFoodRouter(router, DB, validate)
 
 	return router
 }
 
-func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) {
+func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate) {
 	cuisineRepository := repository.NewCuisineRepository(DB)
 	cuisineService := service.NewCuisineService(cuisineRepository, validate)
-	cuisineController := controller.NewCuisineController(cuisineService, rSAPublicKey)
+	cuisineController := controller.NewCuisineController(cuisineService)
 
 	router.GET("/api/cuisines", cuisineController.FindAll)
 	router.GET("/api/cuisine/:IDCuisine", cuisineController.FindById)
@@ -35,10 +36,10 @@ func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validato
 	router.DELETE("/api/cuisine/:IDCuisine", cuisineController.Delete)
 }
 
-func NewFoodRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) {
+func NewFoodRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate) {
 	foodRepository := repository.NewFoodRepository(DB)
 	foodService := service.NewFoodService(foodRepository, validate)
-	foodController := controller.NewFoodController(foodService, rSAPublicKey)
+	foodController := controller.NewFoodController(foodService)
 		
 	router.GET("/api/foods", foodController.FindAll)
 	router.GET("/api/food/:IDFood", foodController.FindById)

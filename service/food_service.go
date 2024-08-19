@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"restaurant/exception"
 	"restaurant/helper"
 	model "restaurant/model/food"
@@ -50,14 +49,13 @@ func (service *FoodService) FindById(ctx context.Context, IDFood uint) model.Foo
 }
 
 func (service *FoodService) Create(ctx context.Context, request model.FoodCreateRequest) model.FoodResponse {
+	// Validate Create Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
 	food := model.Food{}
 	food.FoodName = request.FoodName
 	food.IDCuisine = request.IDCuisine
-	food.CreatedBy = request.CreatedBy
-	food.UpdatedBy = request.UpdatedBy
 
 	food = service.FoodRepository.Create(ctx, food)
 
@@ -70,6 +68,7 @@ func (service *FoodService) Create(ctx context.Context, request model.FoodCreate
 }
 
 func (service *FoodService) Update(ctx context.Context, request model.FoodUpdateRequest) model.FoodResponse {
+	// Validate Update Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -80,7 +79,6 @@ func (service *FoodService) Update(ctx context.Context, request model.FoodUpdate
 
 	food.FoodName = request.FoodName
 	food.IDCuisine = request.IDCuisine
-	food.UpdatedBy = request.UpdatedBy
 
 	food = service.FoodRepository.Update(ctx, food)
 
@@ -93,6 +91,7 @@ func (service *FoodService) Update(ctx context.Context, request model.FoodUpdate
 }
 
 func (service *FoodService) Delete(ctx context.Context, request model.FoodDeleteRequest) {
+	// Validate Delete Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -100,8 +99,6 @@ func (service *FoodService) Delete(ctx context.Context, request model.FoodDelete
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-
-	food.DeletedBy = sql.NullString{String: request.DeletedBy, Valid: true}
 
 	service.FoodRepository.Delete(ctx, food)
 }

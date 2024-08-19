@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"restaurant/exception"
 	"restaurant/helper"
 	model "restaurant/model/cuisine"
@@ -32,13 +31,13 @@ func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate
 }
 
 func (service *CuisineService) Create(ctx context.Context, request model.CuisineCreateRequest) model.CuisineResponse {
+	// Validate Create Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
+	// Convert Model
 	cuisine := model.Cuisine{
 		CuisineName: request.CuisineName,
-		CreatedBy: request.CreatedBy,
-		UpdatedBy: request.UpdatedBy,
 	}
 
 	cuisine = service.CuisineRepository.Create(ctx, cuisine)
@@ -52,6 +51,7 @@ func (service *CuisineService) Create(ctx context.Context, request model.Cuisine
 }
 
 func (service *CuisineService) Delete(ctx context.Context, request model.CuisineDeleteRequest) {
+	// Validate Delete Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 	
@@ -60,12 +60,11 @@ func (service *CuisineService) Delete(ctx context.Context, request model.Cuisine
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	cuisine.DeletedBy = sql.NullString{String: request.DeletedBy, Valid: true}
-
 	service.CuisineRepository.Delete(ctx, cuisine)
 }
 
 func (service *CuisineService) Update(ctx context.Context, request model.CuisineUpdateRequest) model.CuisineResponse {
+	// Validate Update Request
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 	
@@ -75,7 +74,6 @@ func (service *CuisineService) Update(ctx context.Context, request model.Cuisine
 	}
 
 	cuisine.CuisineName = request.CuisineName
-	cuisine.UpdatedBy = request.UpdatedBy
 
 	cuisine = service.CuisineRepository.Update(ctx, cuisine)
 

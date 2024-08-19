@@ -36,7 +36,7 @@ func (repository *CuisineRepository) Create(ctx context.Context, cuisine model.C
 }
 
 func (repository *CuisineRepository) Delete(ctx context.Context, cuisine model.Cuisine) {
-	result := repository.DB.Model(&cuisine).UpdateColumns(model.Cuisine{DeletedBy: cuisine.DeletedBy}).Delete(&cuisine)
+	result := repository.DB.Model(&cuisine).Delete(&cuisine)
 
 	helper.PanicIfError(result.Error)
 }

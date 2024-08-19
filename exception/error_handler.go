@@ -10,19 +10,22 @@ import (
 )
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
-
+	// Authentication Errror
 	if authenticationError(writer, request, err) {
 		return
 	}
 
+	// Not Found Error
 	if notFoundError(writer, request, err) {
 		return
 	}
 
+	// Validation Error
 	if validationErrors(writer, request, err) {
 		return
 	}
 
+	// Bad Request Error
 	if badRequestError(writer, request, err) {
 		return
 	}
@@ -40,16 +43,13 @@ func authenticationError(writer http.ResponseWriter, request *http.Request, err 
 			"error message": exception.Error,
 		}).Warn("UNAUTHORIZED")
 
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusUnauthorized)
-
 		webResponse := web.WebResponse{
 			Code:   http.StatusUnauthorized,
 			Status: "UNAUTHORIZED",
 			Data:   exception.Error,
 		}
 
-		helper.WriteToResponseBody(writer, webResponse)
+		helper.WriteToResponseBody(writer, http.StatusUnauthorized, webResponse)
 		return true
 	} else {
 		return false
@@ -66,16 +66,13 @@ func validationErrors(writer http.ResponseWriter, request *http.Request, err int
 			"error message": exception.Error,
 		}).Warn("BAD REQUEST")
 
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusBadRequest)
-
 		webResponse := web.WebResponse{
 			Code:   http.StatusBadRequest,
 			Status: "BAD REQUEST",
 			Data:   exception.Error(),
 		}
 
-		helper.WriteToResponseBody(writer, webResponse)
+		helper.WriteToResponseBody(writer, http.StatusBadRequest, webResponse)
 		return true
 	} else {
 		return false
@@ -92,16 +89,13 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err interf
 			"error message": exception.Error,
 		}).Warn("NOT FOUND")
 
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusNotFound)
-
 		webResponse := web.WebResponse{
 			Code:   http.StatusNotFound,
 			Status: "NOT FOUND",
 			Data:   exception.Error,
 		}
 
-		helper.WriteToResponseBody(writer, webResponse)
+		helper.WriteToResponseBody(writer, http.StatusNotFound, webResponse)
 		return true
 	} else {
 		return false
@@ -118,16 +112,13 @@ func badRequestError(writer http.ResponseWriter, request *http.Request, err inte
 			"error message": exception.Error,
 		}).Warn("BAD REQUEST")
 
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusBadRequest)
-
 		webResponse := web.WebResponse{
 			Code:   http.StatusBadRequest,
 			Status: "BAD REQUEST",
 			Data:   exception.Error,
 		}
 
-		helper.WriteToResponseBody(writer, webResponse)
+		helper.WriteToResponseBody(writer, http.StatusBadRequest, webResponse)
 		return true
 	} else {
 		return false
@@ -142,14 +133,11 @@ func internalServerError(writer http.ResponseWriter, request *http.Request, err 
 		"error message": err,
 	}).Error("INTERNAL SERVER ERROR")
 
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusInternalServerError)
-
 	webResponse := web.WebResponse{
 		Code:   http.StatusInternalServerError,
 		Status: "INTERNAL SERVER ERROR",
 		Data:   err,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusInternalServerError, webResponse)
 }

@@ -14,6 +14,7 @@ import (
 func NewDB() *gorm.DB {
 	dsn := viper.GetString("database.dsn")
 
+	// Open DB
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
 	})
@@ -27,6 +28,7 @@ func NewDB() *gorm.DB {
 	sqlDB.SetConnMaxLifetime(viper.GetDuration("database.connmaxlifetime") * time.Minute)
 	sqlDB.SetConnMaxIdleTime(viper.GetDuration("database.connmaxidletime") * time.Minute)
 
+	// DB Migration
 	db.AutoMigrate(&model_cuisine.Cuisine{}, &model_food.Food{})
 
 	return db

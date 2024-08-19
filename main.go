@@ -12,23 +12,25 @@ import (
 )
 
 func main() {
+	// Prepare Configuration Management
 	app.NewViper()
 
+	// Prepare Database Connection
 	DB := app.NewDB()
 
+	// Prepare Request Validation
 	validate := validator.New()
 	
-	// redis := app.NewRedis()
+	// Prepare Route
+	router := app.NewRouter(DB, validate)
 
-	rSAPublicKey := app.NewRSAPublicKey()
-	
-	router := app.NewRouter(DB, validate, rSAPublicKey)
-
+	// Prepare Server
 	server := http.Server{
 		Addr:    viper.GetString("server.addr"),
-		Handler: middleware.NewMiddleware(router, rSAPublicKey),
+		Handler: middleware.NewMiddleware(router),
 	}
 
+	// Start API
 	log.Println(viper.GetString("appName") + " Application Start")
 	err := server.ListenAndServe()
 	helper.PanicIfError(err)

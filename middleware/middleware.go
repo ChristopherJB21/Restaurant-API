@@ -1,25 +1,25 @@
 package middleware
 
 import (
-	"crypto/rsa"
 	"net/http"
 	"restaurant/helper"
 	"restaurant/model/web"
+
+	"github.com/spf13/viper"
 )
 
 type Middleware struct {
 	Handler      http.Handler
-	RSAPublicKey *rsa.PublicKey
 }
 
-func NewMiddleware(handler http.Handler, rSAPublicKey *rsa.PublicKey) *Middleware {
+func NewMiddleware(handler http.Handler) *Middleware {
 	return &Middleware{
 		Handler:      handler,
-		RSAPublicKey: rSAPublicKey,
 	}
 }
 
 func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	// Call Middleware Authorization
 	if middleware.Authorization(writer, request){
 		return
 	}
@@ -28,19 +28,17 @@ func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *htt
 }
 
 func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
-	err := helper.VerifyToken(request, middleware.RSAPublicKey)
+	// Get APIKey
+	APIKey := request.Header.Get("X-API-Key")
 
-	if err != nil {
-		writer.Header().Add("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusUnauthorized)
-
+	if APIKey != viper.GetString("apiKey") {
+		// IF UNAUTHORIZED
 		webResponse := web.WebResponse{
 			Code:   http.StatusUnauthorized,
 			Status: "UNAUTHORIZED",
-			Data:   err.Error(),
 		}
 
-		helper.WriteToResponseBody(writer, webResponse)
+		helper.WriteToResponseBody(writer, http.StatusUnauthorized, webResponse)
 
 		return true
 	}
