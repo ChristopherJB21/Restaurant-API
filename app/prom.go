@@ -38,8 +38,8 @@ func StartPrometheus() {
 func NewRequestGauge() *prometheus.GaugeVec {
 	requestCounter := promauto.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "client_request_count",
-			Help: "Total number of requests from client",
+			Name: "client_request_gauge",
+			Help: "Total number of current requests from clients",
 		},
 		[]string{"method", "route"},
 	)
@@ -51,7 +51,7 @@ func NewDurationHistogram() *prometheus.HistogramVec {
 	durationHistogram := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name: "client_request_duration_secs",
-			Help: "Duration of requests from Client",
+			Help: "Duration of requests from clients",
 		},
 		[]string{"method", "route", "status"},
 	)
