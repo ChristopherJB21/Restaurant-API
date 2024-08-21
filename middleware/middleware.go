@@ -34,7 +34,7 @@ func (middleware *Middleware) ServeHTTP(writer http.ResponseWriter, request *htt
 
 	middleware.Handler.ServeHTTP(&ResponseStatus, request)
 
-	duration := time.Since(start).Milliseconds()
+	duration := time.Since(start).Seconds()
 
 	middleware.PromMonitorAfter(ResponseStatus, request, float64(duration))
 }
