@@ -27,20 +27,20 @@ jobs:
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
 
-  Release:
-    needs: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Release
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            docker login -u ${{ vars.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
-            docker container stop ${{ vars.DOCKER_CONTAINER_NAME }}
-            docker container remove ${{ vars.DOCKER_CONTAINER_NAME }}
-            docker run -d --name ${{ vars.DOCKER_CONTAINER_NAME }} -p ${{ vars.DOCKER_CONTAINER_PORT }}:8080 -p ${{ vars.DOCKER_CONTAINER_PORT_PROM }}:8081 ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
-            docker image prune -f
+  # Release:
+  #   needs: Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Release
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ vars.SSH_HOST }}
+  #         username: ${{ vars.SSH_USERNAME }}
+  #         password: ${{ secrets.SSH_PASSWORD }}
+  #         script: |
+  #           docker login -u ${{ vars.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+  #           docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+  #           docker container stop ${{ vars.DOCKER_CONTAINER_NAME }}
+  #           docker container remove ${{ vars.DOCKER_CONTAINER_NAME }}
+  #           docker run -d --name ${{ vars.DOCKER_CONTAINER_NAME }} -p ${{ vars.DOCKER_CONTAINER_PORT }}:8080 -p ${{ vars.DOCKER_CONTAINER_PORT_PROM }}:8081 ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:latest
+  #           docker image prune -f
