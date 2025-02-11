@@ -10,7 +10,7 @@ RUN go mod tidy
 
 RUN go build -o /restaurant
 
-FROM gcr.io/distroless/static-debian12:latest AS build-release-stage
+FROM alpine:latest AS build-release-stage
 
 WORKDIR /
 
