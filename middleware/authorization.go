@@ -4,17 +4,16 @@ import (
 	"net/http"
 	"restaurant/helper"
 	"restaurant/model/web"
-
-	"github.com/spf13/viper"
 )
 
 func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
-	DecodedAPIKey := GetAppKey(request)
+	err := helper.VerifyToken(request, middleware.RSAPublicKey)
 
-	if DecodedAPIKey != viper.GetString("apiKey") {
+	if err != nil {
 		webResponse := web.WebResponse{
 			Code:   http.StatusUnauthorized,
 			Status: "UNAUTHORIZED",
+			Data:   err.Error(),
 		}
 
 		helper.WriteToResponseBody(writer, http.StatusUnauthorized, webResponse)

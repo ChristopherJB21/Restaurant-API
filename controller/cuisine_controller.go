@@ -57,7 +57,7 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 
 func (controller *CuisineController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 64)
+	id, err := strconv.ParseUint(IDCuisine, 10, 32)
 	helper.PanicIfError(err)
 
 	cuisineDeleteRequest := model.CuisineDeleteRequest{}
@@ -104,7 +104,7 @@ func (controller *CuisineController) FindAll(writer http.ResponseWriter, request
 
 func (controller *CuisineController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 64)
+	id, err := strconv.ParseUint(IDCuisine, 10, 32)
 	helper.PanicIfError(err)
 
 	cuisineResponse := controller.CuisineService.FindById(request.Context(), uint(id))
@@ -123,7 +123,7 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 	helper.ReadFromRequestBody(request, &cuisineUpdateRequest)
 
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 64)
+	id, err := strconv.ParseUint(IDCuisine, 10, 32)
 	helper.PanicIfError(err)
 
 	cuisineUpdateRequest.IDCuisine = uint(id)

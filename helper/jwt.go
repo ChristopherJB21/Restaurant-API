@@ -35,8 +35,6 @@ func VerifyToken(request *http.Request, rSAPublicKey *rsa.PublicKey) (err error)
 }
 
 func GetUsername(request *http.Request, rSAPublicKey *rsa.PublicKey) (username string) {
-	return "Admin"
-
 	token, _ := GetToken(request, rSAPublicKey)
 
 	claims := token.Claims.(*model.SSOClaims)

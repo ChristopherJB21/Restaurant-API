@@ -63,7 +63,7 @@ func (controller *FoodController) FindAll(writer http.ResponseWriter, request *h
 
 func (controller *FoodController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 64)
+	id, err := strconv.ParseUint(IDFood, 10, 32)
 	helper.PanicIfError(err)
 
 	foodResponse := controller.FoodService.FindById(request.Context(), uint(id))
@@ -100,7 +100,7 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 	helper.ReadFromRequestBody(request, &foodUpdateRequest)
 
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 64)
+	id, err := strconv.ParseUint(IDFood, 10, 32)
 	helper.PanicIfError(err)
 
 	username := helper.GetUsername(request, controller.RSAPublicKey)
@@ -119,7 +119,7 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 
 func (controller *FoodController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 64)
+	id, err := strconv.ParseUint(IDFood, 10, 32)
 	helper.PanicIfError(err)
 
 	foodDeleteRequest := model.FoodDeleteRequest{
