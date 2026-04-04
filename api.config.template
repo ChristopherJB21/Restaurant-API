@@ -1,10 +1,10 @@
 appName: MyRestaurant
-apiKey: V0tNRU1BTkdKRUxFSw==
+apiKey: sample-api-key
 server:
     addr: 0.0.0.0:8080
     prom: 0.0.0.0:8081
 database:
-    dsn: root:mysecretpassword@tcp(192.168.1.7:3306)/Food?charset=utf8mb4&parseTime=True&loc=Local
+    dsn: root:mysecretpassword@tcp(127.0.0.1:3306)/Food?charset=utf8mb4&parseTime=True&loc=Local
     maxidleconns: 5
     maxopenconns: 10
     connmaxlifetime: 60
