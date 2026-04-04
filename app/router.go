@@ -12,13 +12,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey) *httprouter.Router {
+func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey, rSAPrivateKey *rsa.PrivateKey) *httprouter.Router {
 	router := httprouter.New()
 
 	router.PanicHandler = exception.ErrorHandler
 
 	NewCuisineRouter(router, DB, validate, rSAPublicKey)
 	NewFoodRouter(router, DB, validate, rSAPublicKey)
+	NewUserRouter(router, DB, validate, rSAPrivateKey)
 
 	return router
 }
@@ -45,4 +46,18 @@ func NewFoodRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.V
 	router.POST("/api/food", foodController.Create)
 	router.PUT("/api/food/:IDFood", foodController.Update)
 	router.DELETE("/api/food/:IDFood", foodController.Delete)
+}
+
+func NewUserRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPrivateKey *rsa.PrivateKey) {
+	userRepository := repository.NewUserRepository(DB)
+	userService := service.NewUserService(userRepository, validate, rSAPrivateKey)
+	userController := controller.NewUserController(userService)
+
+	router.GET("/api/users", userController.FindAll)
+	router.GET("/api/user/:IDUser", userController.FindById)
+	router.POST("/api/user/login", userController.Login)
+	router.POST("/api/user", userController.Create)
+	router.PUT("/api/userpassword/:IDUser", userController.UpdatePassword)
+	router.PUT("/api/user/:IDUser", userController.Update)
+	router.DELETE("/api/user/:IDUser", userController.Delete)
 }

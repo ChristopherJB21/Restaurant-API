@@ -4,6 +4,7 @@ import (
 	"restaurant/helper"
 	model_cuisine "restaurant/model/cuisine"
 	model_food "restaurant/model/food"
+	model_user "restaurant/model/user"
 	"time"
 
 	"github.com/spf13/viper"
@@ -27,7 +28,7 @@ func NewDB() *gorm.DB {
 	sqlDB.SetConnMaxLifetime(viper.GetDuration("database.connmaxlifetime") * time.Minute)
 	sqlDB.SetConnMaxIdleTime(viper.GetDuration("database.connmaxidletime") * time.Minute)
 
-	db.AutoMigrate(&model_cuisine.Cuisine{}, &model_food.Food{})
+	db.AutoMigrate(&model_cuisine.Cuisine{}, &model_food.Food{}, &model_user.User{})
 
 	return db
 }

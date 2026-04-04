@@ -1,13 +1,28 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"restaurant/helper"
 	"restaurant/model/web"
+
+	"github.com/spf13/viper"
 )
 
 func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
-	err := helper.VerifyToken(request, middleware.RSAPublicKey)
+	err := error(nil)
+
+	if request.URL.Path == "/api/user/login" {
+		apiKey := GetAppKey(request)
+
+		if apiKey == viper.GetString("apiKey") {
+			return false
+		}
+
+		err = errors.New("invalid API key")
+	} else {
+		err = helper.VerifyToken(request, middleware.RSAPublicKey)
+	}
 
 	if err != nil {
 		webResponse := web.WebResponse{

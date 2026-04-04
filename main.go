@@ -21,8 +21,9 @@ func main() {
 	// redis := app.NewRedis()
 
 	rSAPublicKey := app.NewRSAPublicKey()
+	rSAPrivateKey := app.NewRSAPrivateKey()
 
-	router := app.NewRouter(DB, validate, rSAPublicKey)
+	router := app.NewRouter(DB, validate, rSAPublicKey, rSAPrivateKey)
 
 	metricPrometheus := app.NewMetricPrometheus()
 

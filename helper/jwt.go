@@ -4,6 +4,8 @@ import (
 	"crypto/rsa"
 	"errors"
 	"net/http"
+	model_user "restaurant/model/user"
+	"restaurant/model/web"
 	model "restaurant/model/web"
 	"strings"
 	"time"
@@ -40,4 +42,23 @@ func GetUsername(request *http.Request, rSAPublicKey *rsa.PublicKey) (username s
 	claims := token.Claims.(*model.SSOClaims)
 
 	return claims.Username
+}
+
+func GenerateToken(user model_user.User, rSAPrivateKey *rsa.PrivateKey) (string, error) {
+	claims := web.SSOClaims{
+		IDUser:   user.ID,
+		Username: user.UserName,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "myrestaurant.com",
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+
+	tokenString, err := token.SignedString(rSAPrivateKey)
+	PanicIfError(err)
+
+	return tokenString, nil
 }
