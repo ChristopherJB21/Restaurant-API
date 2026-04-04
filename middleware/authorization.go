@@ -12,7 +12,7 @@ import (
 func (middleware *Middleware) Authorization(writer http.ResponseWriter, request *http.Request) bool {
 	err := error(nil)
 
-	if request.URL.Path == "/api/user/login" {
+	if request.URL.Path == "/api/user/login" || request.URL.Path == "/api/user/create" {
 		apiKey := GetAppKey(request)
 
 		if apiKey == viper.GetString("apiKey") {

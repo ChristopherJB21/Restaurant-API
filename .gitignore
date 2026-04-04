@@ -2,3 +2,5 @@
 *.exe
 *.zip
 *.config
+privateKey
+publicKey
