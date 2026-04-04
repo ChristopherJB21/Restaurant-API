@@ -1,0 +1,29 @@
+meta {
+  name: Create User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/user
+  body: json
+  auth: apikey
+}
+
+auth:apikey {
+  key: X-API-Key
+  value: {{api_key}}
+  placement: header
+}
+
+body:json {
+  {
+    "UserName": "admin",
+    "Password": "123456"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
