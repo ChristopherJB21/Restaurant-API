@@ -41,12 +41,12 @@ func (controller *UserController) Create(writer http.ResponseWriter, request *ht
 
 	userResponse := controller.UserService.Create(request.Context(), userCreateRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusCreated,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusCreated, webResponse)
 }
 
 func (controller *UserController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -56,11 +56,11 @@ func (controller *UserController) Delete(writer http.ResponseWriter, request *ht
 
 	controller.UserService.Delete(request.Context(), uint(id))
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *UserController) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -84,12 +84,12 @@ func (controller *UserController) FindAll(writer http.ResponseWriter, request *h
 
 	userResponses := controller.UserService.FindAll(request.Context(), limit, offset)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   userResponses,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *UserController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -100,12 +100,12 @@ func (controller *UserController) FindById(writer http.ResponseWriter, request *
 	userResponse := controller.UserService.FindById(request.Context(), uint(id))
 
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *UserController) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -120,12 +120,12 @@ func (controller *UserController) Update(writer http.ResponseWriter, request *ht
 
 	userResponse := controller.UserService.Update(request.Context(), userUpdateRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   userResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *UserController) Login(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -134,12 +134,12 @@ func (controller *UserController) Login(writer http.ResponseWriter, request *htt
 
 	userLoginResponse := controller.UserService.Login(request.Context(), userLoginRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   userLoginResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *UserController) UpdatePassword(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -154,9 +154,9 @@ func (controller *UserController) UpdatePassword(writer http.ResponseWriter, req
 
 	controller.UserService.UpdatePassword(request.Context(), userUpdatePasswordRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }

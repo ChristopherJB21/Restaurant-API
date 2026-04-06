@@ -5,3 +5,4 @@
 privateKey
 publicKey
 *.env
+_debug*

@@ -1,0 +1,22 @@
+meta {
+  name: Delete User
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{base_url}}/user/3
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "UserName": "{{$randomFirstName}}"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
