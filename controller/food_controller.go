@@ -53,12 +53,12 @@ func (controller *FoodController) FindAll(writer http.ResponseWriter, request *h
 
 	foodResponses := controller.FoodService.FindAll(request.Context(), limit, offset)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   foodResponses,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *FoodController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -69,12 +69,12 @@ func (controller *FoodController) FindById(writer http.ResponseWriter, request *
 	foodResponse := controller.FoodService.FindById(request.Context(), uint(id))
 
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *FoodController) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -87,12 +87,12 @@ func (controller *FoodController) Create(writer http.ResponseWriter, request *ht
 
 	foodResponse := controller.FoodService.Create(request.Context(), foodCreateRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusCreated,
 		Status: "OK",
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusCreated, webResponse)
 }
 
 func (controller *FoodController) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -109,12 +109,12 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 
 	foodResponse := controller.FoodService.Update(request.Context(), foodUpdateRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   foodResponse,
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
 
 func (controller *FoodController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -129,9 +129,9 @@ func (controller *FoodController) Delete(writer http.ResponseWriter, request *ht
 
 	controller.FoodService.Delete(request.Context(), foodDeleteRequest)
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
+		Code:   http.StatusOK,
 		Status: "OK",
 	}
 
-	helper.WriteToResponseBody(writer, http.StatusAccepted, webResponse)
+	helper.WriteToResponseBody(writer, http.StatusOK, webResponse)
 }
