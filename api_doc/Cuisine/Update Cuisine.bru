@@ -1,0 +1,22 @@
+meta {
+  name: Update Cuisine
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}/cuisine/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "CuisineName": "Chinese Food"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

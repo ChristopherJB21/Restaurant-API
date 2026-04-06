@@ -1,0 +1,22 @@
+meta {
+  name: Delete Cuisine
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/cuisine/3
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "CuisineName": "Chinese Food"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

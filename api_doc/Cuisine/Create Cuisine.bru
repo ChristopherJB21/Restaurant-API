@@ -1,0 +1,26 @@
+meta {
+  name: Create Cuisine
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/cuisine
+  body: json
+  auth: inherit
+}
+
+params:query {
+  : 
+}
+
+body:json {
+  {
+    "CuisineName": "Western"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

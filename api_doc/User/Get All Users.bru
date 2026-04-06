@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{base_url}}/users
+  url: {{base_url}}/users?limit=5&offset=0
   body: none
   auth: inherit
+}
+
+params:query {
+  limit: 5
+  offset: 0
 }
 
 settings {

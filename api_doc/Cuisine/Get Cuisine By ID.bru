@@ -1,0 +1,16 @@
+meta {
+  name: Get Cuisine By ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/cuisine/2
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
