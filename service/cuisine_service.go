@@ -7,8 +7,11 @@ import (
 	"restaurant/helper"
 	model "restaurant/model/cuisine"
 	"restaurant/repository"
+	"strconv"
+	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 )
 
 type ICuisineService interface {
@@ -22,12 +25,14 @@ type ICuisineService interface {
 type CuisineService struct {
 	CuisineRepository repository.ICuisineRepository
 	Validate          *validator.Validate
+	Redis             *redis.Client
 }
 
-func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate *validator.Validate) ICuisineService {
+func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate *validator.Validate, redis *redis.Client) ICuisineService {
 	return &CuisineService{
 		CuisineRepository: cuisineRepository,
 		Validate:          validate,
+		Redis:             redis,
 	}
 }
 
@@ -37,8 +42,8 @@ func (service *CuisineService) Create(ctx context.Context, request model.Cuisine
 
 	cuisine := model.Cuisine{
 		CuisineName: request.CuisineName,
-		CreatedBy: request.CreatedBy,
-		UpdatedBy: request.UpdatedBy,
+		CreatedBy:   request.CreatedBy,
+		UpdatedBy:   request.UpdatedBy,
 	}
 
 	cuisine = service.CuisineRepository.Create(ctx, cuisine)
@@ -54,7 +59,7 @@ func (service *CuisineService) Create(ctx context.Context, request model.Cuisine
 func (service *CuisineService) Delete(ctx context.Context, request model.CuisineDeleteRequest) {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
-	
+
 	cuisine, err := service.CuisineRepository.FindById(ctx, request.IDCuisine)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
@@ -68,7 +73,7 @@ func (service *CuisineService) Delete(ctx context.Context, request model.Cuisine
 func (service *CuisineService) Update(ctx context.Context, request model.CuisineUpdateRequest) model.CuisineResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
-	
+
 	cuisine, err := service.CuisineRepository.FindById(ctx, request.IDCuisine)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
@@ -97,10 +102,19 @@ func (service *CuisineService) FindAll(ctx context.Context, limit int, offset in
 }
 
 func (service *CuisineService) FindById(ctx context.Context, IDCuisine uint) model.CuisineResponse {
+	redisKey := "cuisine_" + strconv.FormatUint(uint64(IDCuisine), 10)
+	var cuisine model.Cuisine
+
+	if helper.GetCache(ctx, redisKey, &cuisine, service.Redis) {
+		return model.ToCuisineResponse(cuisine)
+	}
+
 	cuisine, err := service.CuisineRepository.FindById(ctx, IDCuisine)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
+
+	helper.SetCache(ctx, redisKey, cuisine, 5*time.Minute, service.Redis)
 
 	return model.ToCuisineResponse(cuisine)
 }

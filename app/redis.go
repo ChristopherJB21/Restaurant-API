@@ -9,8 +9,8 @@ func NewRedis() *redis.Client {
 	host := viper.GetString("redis.host")
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     host,
-		DB:       0,
+		Addr: host,
+		DB:   0,
 	})
 
 	return client

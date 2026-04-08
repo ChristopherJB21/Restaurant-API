@@ -18,12 +18,12 @@ func main() {
 
 	validate := validator.New()
 
-	// redis := app.NewRedis()
+	redis := app.NewRedis()
 
 	rSAPublicKey := app.NewRSAPublicKey()
 	rSAPrivateKey := app.NewRSAPrivateKey()
 
-	router := app.NewRouter(DB, validate, rSAPublicKey, rSAPrivateKey)
+	router := app.NewRouter(DB, validate, rSAPublicKey, rSAPrivateKey, redis)
 
 	metricPrometheus := app.NewMetricPrometheus()
 
