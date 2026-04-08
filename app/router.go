@@ -4,30 +4,30 @@ import (
 	"crypto/rsa"
 	"restaurant/controller"
 	"restaurant/exception"
+	"restaurant/model/web"
 	"restaurant/repository"
 	"restaurant/service"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
-func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey, rSAPrivateKey *rsa.PrivateKey, redis *redis.Client) *httprouter.Router {
+func NewRouter(DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey, rSAPrivateKey *rsa.PrivateKey, customCache *web.CustomCache) *httprouter.Router {
 	router := httprouter.New()
 
 	router.PanicHandler = exception.ErrorHandler
 
-	NewCuisineRouter(router, DB, validate, rSAPublicKey, redis)
+	NewCuisineRouter(router, DB, validate, rSAPublicKey, customCache)
 	NewFoodRouter(router, DB, validate, rSAPublicKey)
 	NewUserRouter(router, DB, validate, rSAPrivateKey)
 
 	return router
 }
 
-func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey, redis *redis.Client) {
+func NewCuisineRouter(router *httprouter.Router, DB *gorm.DB, validate *validator.Validate, rSAPublicKey *rsa.PublicKey, customCache *web.CustomCache) {
 	cuisineRepository := repository.NewCuisineRepository(DB)
-	cuisineService := service.NewCuisineService(cuisineRepository, validate, redis)
+	cuisineService := service.NewCuisineService(cuisineRepository, validate, customCache)
 	cuisineController := controller.NewCuisineController(cuisineService, rSAPublicKey)
 
 	router.GET("/api/cuisines", cuisineController.FindAll)

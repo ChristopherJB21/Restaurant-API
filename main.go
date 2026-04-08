@@ -19,11 +19,15 @@ func main() {
 	validate := validator.New()
 
 	redis := app.NewRedis()
+	zstdWriter := app.NewZstdWriter()
+	zstdReader := app.NewZstdReader()
+
+	customCache := app.NewCustomCache(redis, zstdWriter, zstdReader)
 
 	rSAPublicKey := app.NewRSAPublicKey()
 	rSAPrivateKey := app.NewRSAPrivateKey()
 
-	router := app.NewRouter(DB, validate, rSAPublicKey, rSAPrivateKey, redis)
+	router := app.NewRouter(DB, validate, rSAPublicKey, rSAPrivateKey, customCache)
 
 	metricPrometheus := app.NewMetricPrometheus()
 

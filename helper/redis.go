@@ -3,27 +3,34 @@ package helper
 import (
 	"context"
 	"encoding/json"
+	"restaurant/model/web"
 	"time"
-
-	"github.com/redis/go-redis/v9"
 )
 
-func SetCache(ctx context.Context, key string, value interface{}, expiration time.Duration, redis *redis.Client) {
+func SetCache(ctx context.Context, key string, value interface{}, expiration time.Duration, customCache *web.CustomCache) {
 	cacheJSON, err := json.Marshal(value)
 	PanicIfError(err)
 
-	err = redis.Set(ctx, key, cacheJSON, expiration).Err()
+	compressedCache := customCache.ZstdWriter.EncodeAll(cacheJSON, nil)
+
+	err = customCache.Redis.Set(ctx, key, compressedCache, expiration).Err()
 	PanicIfError(err)
 }
 
-func GetCache(ctx context.Context, key string, result interface{}, redis *redis.Client) bool {
-	cacheJSON, err := redis.Get(ctx, key).Result()
+func GetCache(ctx context.Context, key string, result interface{}, customCache *web.CustomCache) bool {
+	getCache := customCache.Redis.Get(ctx, key)
 
-	if err != nil {
+	if getCache.Err() != nil {
 		return false
 	}
 
-	err = json.Unmarshal([]byte(cacheJSON), result)
+	compressedCache, err := getCache.Bytes()
+	PanicIfError(err)
+
+	cacheJSON, err := customCache.ZstdReader.DecodeAll(compressedCache, nil)
+	PanicIfError(err)
+
+	err = json.Unmarshal(cacheJSON, result)
 	PanicIfError(err)
 
 	return true

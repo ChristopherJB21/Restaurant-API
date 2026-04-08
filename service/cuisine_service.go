@@ -6,12 +6,12 @@ import (
 	"restaurant/exception"
 	"restaurant/helper"
 	model "restaurant/model/cuisine"
+	"restaurant/model/web"
 	"restaurant/repository"
 	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/redis/go-redis/v9"
 )
 
 type ICuisineService interface {
@@ -25,14 +25,14 @@ type ICuisineService interface {
 type CuisineService struct {
 	CuisineRepository repository.ICuisineRepository
 	Validate          *validator.Validate
-	Redis             *redis.Client
+	CustomCache       *web.CustomCache
 }
 
-func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate *validator.Validate, redis *redis.Client) ICuisineService {
+func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate *validator.Validate, customCache *web.CustomCache) ICuisineService {
 	return &CuisineService{
 		CuisineRepository: cuisineRepository,
 		Validate:          validate,
-		Redis:             redis,
+		CustomCache:       customCache,
 	}
 }
 
@@ -105,7 +105,7 @@ func (service *CuisineService) FindById(ctx context.Context, IDCuisine uint) mod
 	redisKey := "cuisine_" + strconv.FormatUint(uint64(IDCuisine), 10)
 	var cuisine model.Cuisine
 
-	if helper.GetCache(ctx, redisKey, &cuisine, service.Redis) {
+	if helper.GetCache(ctx, redisKey, &cuisine, service.CustomCache) {
 		return model.ToCuisineResponse(cuisine)
 	}
 
@@ -114,7 +114,7 @@ func (service *CuisineService) FindById(ctx context.Context, IDCuisine uint) mod
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	helper.SetCache(ctx, redisKey, cuisine, 5*time.Minute, service.Redis)
+	helper.SetCache(ctx, redisKey, cuisine, 5*time.Minute, service.CustomCache)
 
 	return model.ToCuisineResponse(cuisine)
 }
