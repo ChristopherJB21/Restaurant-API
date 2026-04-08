@@ -74,25 +74,7 @@ func (controller *CuisineController) Delete(writer http.ResponseWriter, request 
 }
 
 func (controller *CuisineController) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	var limit, offset int
-
-	limitQuery, err := helper.ReadFromQueryParams("limit", request)
-	if err != nil {
-		limit = 10
-	} else {
-		limit, err = strconv.Atoi(limitQuery)
-		helper.PanicIfError(err)
-	}
-
-	offsetQuery, err := helper.ReadFromQueryParams("offset", request)
-	if err != nil {
-		offset = 0
-	} else {
-		offset, err = strconv.Atoi(offsetQuery)
-		helper.PanicIfError(err)
-	}
-
-	cuisineResponses := controller.CuisineService.FindAll(request.Context(), limit, offset)
+	cuisineResponses := controller.CuisineService.FindAll(request.Context())
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "OK",

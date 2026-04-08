@@ -35,3 +35,8 @@ func GetCache(ctx context.Context, key string, result interface{}, customCache *
 
 	return true
 }
+
+func DeleteCache(ctx context.Context, key string, customCache *web.CustomCache) {
+	err := customCache.Redis.Del(ctx, key).Err()
+	PanicIfError(err)
+}

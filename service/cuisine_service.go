@@ -18,7 +18,7 @@ type ICuisineService interface {
 	Create(ctx context.Context, request model.CuisineCreateRequest) model.CuisineResponse
 	Delete(ctx context.Context, request model.CuisineDeleteRequest)
 	Update(ctx context.Context, request model.CuisineUpdateRequest) model.CuisineResponse
-	FindAll(ctx context.Context, limit int, offset int) []model.CuisineResponse
+	FindAll(ctx context.Context) []model.CuisineResponse
 	FindById(ctx context.Context, IDCuisine uint) model.CuisineResponse
 }
 
@@ -26,13 +26,18 @@ type CuisineService struct {
 	CuisineRepository repository.ICuisineRepository
 	Validate          *validator.Validate
 	CustomCache       *web.CustomCache
+
+	redisKeyAllCuisines string
+	redisKeyCuisineByID string
 }
 
 func NewCuisineService(cuisineRepository repository.ICuisineRepository, validate *validator.Validate, customCache *web.CustomCache) ICuisineService {
 	return &CuisineService{
-		CuisineRepository: cuisineRepository,
-		Validate:          validate,
-		CustomCache:       customCache,
+		CuisineRepository:   cuisineRepository,
+		Validate:            validate,
+		CustomCache:         customCache,
+		redisKeyAllCuisines: "cuisines",
+		redisKeyCuisineByID: "cuisine_",
 	}
 }
 
@@ -53,6 +58,8 @@ func (service *CuisineService) Create(ctx context.Context, request model.Cuisine
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
+	helper.DeleteCache(ctx, service.redisKeyAllCuisines, service.CustomCache)
+
 	return model.ToCuisineResponse(cuisine)
 }
 
@@ -68,6 +75,9 @@ func (service *CuisineService) Delete(ctx context.Context, request model.Cuisine
 	cuisine.DeletedBy = sql.NullString{String: request.DeletedBy, Valid: true}
 
 	service.CuisineRepository.Delete(ctx, cuisine)
+
+	helper.DeleteCache(ctx, service.redisKeyCuisineByID+strconv.FormatUint(uint64(request.IDCuisine), 10), service.CustomCache)
+	helper.DeleteCache(ctx, service.redisKeyAllCuisines, service.CustomCache)
 }
 
 func (service *CuisineService) Update(ctx context.Context, request model.CuisineUpdateRequest) model.CuisineResponse {
@@ -89,20 +99,32 @@ func (service *CuisineService) Update(ctx context.Context, request model.Cuisine
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
+	helper.DeleteCache(ctx, service.redisKeyCuisineByID+strconv.FormatUint(uint64(request.IDCuisine), 10), service.CustomCache)
+	helper.DeleteCache(ctx, service.redisKeyAllCuisines, service.CustomCache)
+
 	return model.ToCuisineResponse(cuisine)
 }
 
-func (service *CuisineService) FindAll(ctx context.Context, limit int, offset int) []model.CuisineResponse {
-	cuisines, err := service.CuisineRepository.FindAll(ctx, limit, offset)
+func (service *CuisineService) FindAll(ctx context.Context) []model.CuisineResponse {
+	redisKey := service.redisKeyAllCuisines
+	var cuisines []model.Cuisine
+
+	if helper.GetCache(ctx, redisKey, &cuisines, service.CustomCache) {
+		return model.ToCuisineResponses(cuisines)
+	}
+
+	cuisines, err := service.CuisineRepository.FindAll(ctx)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
+
+	helper.SetCache(ctx, redisKey, cuisines, 5*time.Minute, service.CustomCache)
 
 	return model.ToCuisineResponses(cuisines)
 }
 
 func (service *CuisineService) FindById(ctx context.Context, IDCuisine uint) model.CuisineResponse {
-	redisKey := "cuisine_" + strconv.FormatUint(uint64(IDCuisine), 10)
+	redisKey := service.redisKeyCuisineByID + strconv.FormatUint(uint64(IDCuisine), 10)
 	var cuisine model.Cuisine
 
 	if helper.GetCache(ctx, redisKey, &cuisine, service.CustomCache) {
