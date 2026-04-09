@@ -72,7 +72,7 @@ func (repository *FoodRepository) Update(ctx context.Context, food model.Food) m
 }
 
 func (repository *FoodRepository) Delete(ctx context.Context, food model.Food) {
-	result := repository.DB.Delete(&food)
+	result := repository.DB.Model(&food).UpdateColumns(model.Food{DeletedBy: food.DeletedBy}).Delete(&food)
 
 	helper.PanicIfError(result.Error)
 }
