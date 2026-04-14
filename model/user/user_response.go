@@ -1,8 +1,10 @@
 package user
 
+import "github.com/google/uuid"
+
 type UserResponse struct {
-	IDUser   uint   `json:"IDUser"`
-	UserName string `json:"UserName"`
+	IDUser   uuid.UUID `json:"IDUser"`
+	UserName string    `json:"UserName"`
 }
 
 func ToUserResponse(item User) UserResponse {

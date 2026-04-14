@@ -1,8 +1,10 @@
 package model
 
+import "github.com/google/uuid"
+
 type CuisineResponse struct {
-	IDCuisine   uint   `json:"IDCuisine"`
-	CuisineName string `json:"CuisineName"`
+	IDCuisine   uuid.UUID `json:"IDCuisine"`
+	CuisineName string    `json:"CuisineName"`
 }
 
 func ToCuisineResponse(item Cuisine) CuisineResponse {

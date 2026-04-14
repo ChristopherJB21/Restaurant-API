@@ -6,12 +6,13 @@ import (
 	"restaurant/helper"
 	model "restaurant/model/food"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type IFoodRepository interface {
 	FindAll(ctx context.Context, limit int, offset int) ([]model.Food, error)
-	FindById(ctx context.Context, IDFood uint) (model.Food, error)
+	FindById(ctx context.Context, IDFood uuid.UUID) (model.Food, error)
 	Create(ctx context.Context, food model.Food) model.Food
 	Update(ctx context.Context, food model.Food) model.Food
 	Delete(ctx context.Context, food model.Food)
@@ -41,7 +42,7 @@ func (repository *FoodRepository) FindAll(ctx context.Context, limit int, offset
 	return foods, nil
 }
 
-func (repository *FoodRepository) FindById(ctx context.Context, IDFood uint) (model.Food, error) {
+func (repository *FoodRepository) FindById(ctx context.Context, IDFood uuid.UUID) (model.Food, error) {
 	var food model.Food
 
 	result := repository.DB.Joins("Cuisine").First(&food, IDFood)

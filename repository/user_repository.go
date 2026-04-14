@@ -8,6 +8,7 @@ import (
 	model "restaurant/model/user"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +17,7 @@ type IUserRepository interface {
 	Delete(ctx context.Context, user model.User)
 	Update(ctx context.Context, user model.User) model.User
 	FindAll(ctx context.Context, limit int, offset int) ([]model.User, error)
-	FindById(ctx context.Context, IDUser uint) (model.User, error)
+	FindById(ctx context.Context, IDUser uuid.UUID) (model.User, error)
 	Login(ctx context.Context, Username string) (model.User, error)
 }
 
@@ -62,7 +63,7 @@ func (repository *UserRepository) FindAll(ctx context.Context, limit int, offset
 	return users, nil
 }
 
-func (repository *UserRepository) FindById(ctx context.Context, IDUser uint) (model.User, error) {
+func (repository *UserRepository) FindById(ctx context.Context, IDUser uuid.UUID) (model.User, error) {
 	var user model.User
 
 	result := repository.DB.First(&user, IDUser)

@@ -8,10 +8,10 @@ import (
 	model "restaurant/model/cuisine"
 	"restaurant/model/web"
 	"restaurant/repository"
-	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type ICuisineService interface {
@@ -19,7 +19,7 @@ type ICuisineService interface {
 	Delete(ctx context.Context, request model.CuisineDeleteRequest)
 	Update(ctx context.Context, request model.CuisineUpdateRequest) model.CuisineResponse
 	FindAll(ctx context.Context) []model.CuisineResponse
-	FindById(ctx context.Context, IDCuisine uint) model.CuisineResponse
+	FindById(ctx context.Context, IDCuisine uuid.UUID) model.CuisineResponse
 }
 
 type CuisineService struct {
@@ -76,7 +76,7 @@ func (service *CuisineService) Delete(ctx context.Context, request model.Cuisine
 
 	service.CuisineRepository.Delete(ctx, cuisine)
 
-	helper.DeleteCache(ctx, service.redisKeyCuisineByID+strconv.FormatUint(uint64(request.IDCuisine), 10), service.CustomCache)
+	helper.DeleteCache(ctx, service.redisKeyCuisineByID+request.IDCuisine.String(), service.CustomCache)
 	helper.DeleteCache(ctx, service.redisKeyAllCuisines, service.CustomCache)
 }
 
@@ -99,7 +99,7 @@ func (service *CuisineService) Update(ctx context.Context, request model.Cuisine
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	helper.DeleteCache(ctx, service.redisKeyCuisineByID+strconv.FormatUint(uint64(request.IDCuisine), 10), service.CustomCache)
+	helper.DeleteCache(ctx, service.redisKeyCuisineByID+request.IDCuisine.String(), service.CustomCache)
 	helper.DeleteCache(ctx, service.redisKeyAllCuisines, service.CustomCache)
 
 	return model.ToCuisineResponse(cuisine)
@@ -123,8 +123,8 @@ func (service *CuisineService) FindAll(ctx context.Context) []model.CuisineRespo
 	return model.ToCuisineResponses(cuisines)
 }
 
-func (service *CuisineService) FindById(ctx context.Context, IDCuisine uint) model.CuisineResponse {
-	redisKey := service.redisKeyCuisineByID + strconv.FormatUint(uint64(IDCuisine), 10)
+func (service *CuisineService) FindById(ctx context.Context, IDCuisine uuid.UUID) model.CuisineResponse {
+	redisKey := service.redisKeyCuisineByID + IDCuisine.String()
 	var cuisine model.Cuisine
 
 	if helper.GetCache(ctx, redisKey, &cuisine, service.CustomCache) {

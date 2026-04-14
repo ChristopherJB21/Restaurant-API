@@ -1,6 +1,8 @@
 package model
 
+import "github.com/google/uuid"
+
 type CuisineDeleteRequest struct {
-	IDCuisine uint   `validate:"required"`
-	DeletedBy string `validate:"required"`
+	IDCuisine uuid.UUID `validate:"required"`
+	DeletedBy string    `validate:"required"`
 }

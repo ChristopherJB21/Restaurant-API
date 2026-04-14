@@ -6,6 +6,7 @@ import (
 	"restaurant/helper"
 	model "restaurant/model/cuisine"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +15,7 @@ type ICuisineRepository interface {
 	Delete(ctx context.Context, cuisine model.Cuisine)
 	Update(ctx context.Context, cuisine model.Cuisine) model.Cuisine
 	FindAll(ctx context.Context) ([]model.Cuisine, error)
-	FindById(ctx context.Context, IDCuisine uint) (model.Cuisine, error)
+	FindById(ctx context.Context, IDCuisine uuid.UUID) (model.Cuisine, error)
 }
 
 type CuisineRepository struct {
@@ -63,7 +64,7 @@ func (repository *CuisineRepository) FindAll(ctx context.Context) ([]model.Cuisi
 	return cuisines, nil
 }
 
-func (repository *CuisineRepository) FindById(ctx context.Context, IDCuisine uint) (model.Cuisine, error) {
+func (repository *CuisineRepository) FindById(ctx context.Context, IDCuisine uuid.UUID) (model.Cuisine, error) {
 	var cuisine model.Cuisine
 
 	result := repository.DB.First(&cuisine, IDCuisine)

@@ -9,6 +9,7 @@ import (
 	"restaurant/service"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -63,10 +64,10 @@ func (controller *FoodController) FindAll(writer http.ResponseWriter, request *h
 
 func (controller *FoodController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 32)
+	id, err := uuid.Parse(IDFood)
 	helper.PanicIfError(err)
 
-	foodResponse := controller.FoodService.FindById(request.Context(), uint(id))
+	foodResponse := controller.FoodService.FindById(request.Context(), id)
 
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
@@ -100,11 +101,11 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 	helper.ReadFromRequestBody(request, &foodUpdateRequest)
 
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 32)
+	id, err := uuid.Parse(IDFood)
 	helper.PanicIfError(err)
 
 	username := helper.GetUsername(request, controller.RSAPublicKey)
-	foodUpdateRequest.IDFood = uint(id)
+	foodUpdateRequest.IDFood = id
 	foodUpdateRequest.UpdatedBy = username
 
 	foodResponse := controller.FoodService.Update(request.Context(), foodUpdateRequest)
@@ -119,11 +120,11 @@ func (controller *FoodController) Update(writer http.ResponseWriter, request *ht
 
 func (controller *FoodController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDFood := params.ByName("IDFood")
-	id, err := strconv.ParseUint(IDFood, 10, 32)
+	id, err := uuid.Parse(IDFood)
 	helper.PanicIfError(err)
 
 	foodDeleteRequest := model.FoodDeleteRequest{
-		IDFood:    uint(id),
+		IDFood:    id,
 		DeletedBy: helper.GetUsername(request, controller.RSAPublicKey),
 	}
 

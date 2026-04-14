@@ -9,15 +9,16 @@ import (
 	"restaurant/repository"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type IUserService interface {
 	Create(ctx context.Context, request model.UserCreateRequest) model.UserResponse
-	Delete(ctx context.Context, IDUser uint)
+	Delete(ctx context.Context, IDUser uuid.UUID)
 	Update(ctx context.Context, request model.UserUpdateRequest) model.UserResponse
 	UpdatePassword(ctx context.Context, request model.UserUpdatePasswordRequest)
 	FindAll(ctx context.Context, limit int, offset int) []model.UserResponse
-	FindById(ctx context.Context, IDUser uint) model.UserResponse
+	FindById(ctx context.Context, IDUser uuid.UUID) model.UserResponse
 	Login(ctx context.Context, request model.UserLoginRequest) model.UserLoginResponse
 }
 
@@ -57,7 +58,7 @@ func (service *UserService) Create(ctx context.Context, request model.UserCreate
 	return model.ToUserResponse(newUser)
 }
 
-func (service *UserService) Delete(ctx context.Context, IDUser uint) {
+func (service *UserService) Delete(ctx context.Context, IDUser uuid.UUID) {
 	user, err := service.UserRepository.FindById(ctx, IDUser)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
@@ -75,7 +76,7 @@ func (service *UserService) FindAll(ctx context.Context, limit int, offset int) 
 	return model.ToUsersResponses(users)
 }
 
-func (service *UserService) FindById(ctx context.Context, IDUser uint) model.UserResponse {
+func (service *UserService) FindById(ctx context.Context, IDUser uuid.UUID) model.UserResponse {
 	findUser, err := service.UserRepository.FindById(ctx, IDUser)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))

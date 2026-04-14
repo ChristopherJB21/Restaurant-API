@@ -7,10 +7,10 @@ import (
 	model "restaurant/model/cuisine"
 	"restaurant/model/web"
 	"restaurant/service"
-	"strconv"
 
 	"encoding/json"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -57,11 +57,11 @@ func (controller *CuisineController) Create(writer http.ResponseWriter, request 
 
 func (controller *CuisineController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 32)
+	id, err := uuid.Parse(IDCuisine)
 	helper.PanicIfError(err)
 
 	cuisineDeleteRequest := model.CuisineDeleteRequest{}
-	cuisineDeleteRequest.IDCuisine = uint(id)
+	cuisineDeleteRequest.IDCuisine = id
 	cuisineDeleteRequest.DeletedBy = helper.GetUsername(request, controller.RSAPublicKey)
 
 	controller.CuisineService.Delete(request.Context(), cuisineDeleteRequest)
@@ -86,10 +86,10 @@ func (controller *CuisineController) FindAll(writer http.ResponseWriter, request
 
 func (controller *CuisineController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 32)
+	id, err := uuid.Parse(IDCuisine)
 	helper.PanicIfError(err)
 
-	cuisineResponse := controller.CuisineService.FindById(request.Context(), uint(id))
+	cuisineResponse := controller.CuisineService.FindById(request.Context(), id)
 
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
@@ -105,10 +105,10 @@ func (controller *CuisineController) Update(writer http.ResponseWriter, request 
 	helper.ReadFromRequestBody(request, &cuisineUpdateRequest)
 
 	IDCuisine := params.ByName("IDCuisine")
-	id, err := strconv.ParseUint(IDCuisine, 10, 32)
+	id, err := uuid.Parse(IDCuisine)
 	helper.PanicIfError(err)
 
-	cuisineUpdateRequest.IDCuisine = uint(id)
+	cuisineUpdateRequest.IDCuisine = id
 
 	username := helper.GetUsername(request, controller.RSAPublicKey)
 	cuisineUpdateRequest.UpdatedBy = username

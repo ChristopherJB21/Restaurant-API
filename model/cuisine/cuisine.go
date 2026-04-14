@@ -2,12 +2,11 @@ package model
 
 import (
 	"database/sql"
-
-	"gorm.io/gorm"
+	"restaurant/model/web"
 )
 
 type Cuisine struct {
-	*gorm.Model
+	web.BaseModel
 	CuisineName string `gorm:"not null"`
 	CreatedBy   string `gorm:"not null"`
 	UpdatedBy   string `gorm:"not null"`

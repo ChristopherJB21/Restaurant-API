@@ -1,9 +1,11 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"restaurant/model/web"
+)
 
 type User struct {
-	*gorm.Model
+	web.BaseModel
 	UserName string `gorm:"uniqueIndex(255)"`
 	Password string `gorm:"not null"`
 }

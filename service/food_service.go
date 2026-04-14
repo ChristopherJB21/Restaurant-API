@@ -9,11 +9,12 @@ import (
 	"restaurant/repository"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type IFoodService interface {
 	FindAll(ctx context.Context, limit int, offset int) []model.FoodResponse
-	FindById(ctx context.Context, IDFood uint) model.FoodResponse
+	FindById(ctx context.Context, IDFood uuid.UUID) model.FoodResponse
 	Create(ctx context.Context, request model.FoodCreateRequest) model.FoodResponse
 	Update(ctx context.Context, request model.FoodUpdateRequest) model.FoodResponse
 	Delete(ctx context.Context, request model.FoodDeleteRequest)
@@ -40,7 +41,7 @@ func (service *FoodService) FindAll(ctx context.Context, limit int, offset int) 
 	return model.ToFoodResponses(foods)
 }
 
-func (service *FoodService) FindById(ctx context.Context, IDFood uint) model.FoodResponse {
+func (service *FoodService) FindById(ctx context.Context, IDFood uuid.UUID) model.FoodResponse {
 	food, err := service.FoodRepository.FindById(ctx, IDFood)
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))

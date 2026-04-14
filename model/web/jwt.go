@@ -1,9 +1,12 @@
 package web
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+)
 
 type SSOClaims struct {
-	IDUser   uint   `json:"iduser"`
-	Username string `json:"username"`
+	IDUser   uuid.UUID `json:"iduser"`
+	Username string    `json:"username"`
 	jwt.RegisteredClaims
 }

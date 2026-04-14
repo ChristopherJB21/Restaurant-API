@@ -9,6 +9,7 @@ import (
 	"restaurant/service"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -51,10 +52,10 @@ func (controller *UserController) Create(writer http.ResponseWriter, request *ht
 
 func (controller *UserController) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDUser := params.ByName("IDUser")
-	id, err := strconv.ParseUint(IDUser, 10, 32)
+	id, err := uuid.Parse(IDUser)
 	helper.PanicIfError(err)
 
-	controller.UserService.Delete(request.Context(), uint(id))
+	controller.UserService.Delete(request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
 		Status: "OK",
@@ -94,10 +95,10 @@ func (controller *UserController) FindAll(writer http.ResponseWriter, request *h
 
 func (controller *UserController) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	IDUser := params.ByName("IDUser")
-	id, err := strconv.ParseUint(IDUser, 10, 32)
+	id, err := uuid.Parse(IDUser)
 	helper.PanicIfError(err)
 
-	userResponse := controller.UserService.FindById(request.Context(), uint(id))
+	userResponse := controller.UserService.FindById(request.Context(), id)
 
 	webResponse := web.WebResponse{
 		Code:   http.StatusOK,
@@ -113,10 +114,10 @@ func (controller *UserController) Update(writer http.ResponseWriter, request *ht
 	helper.ReadFromRequestBody(request, &userUpdateRequest)
 
 	IDUser := params.ByName("IDUser")
-	id, err := strconv.ParseUint(IDUser, 10, 32)
+	id, err := uuid.Parse(IDUser)
 	helper.PanicIfError(err)
 
-	userUpdateRequest.IDUser = uint(id)
+	userUpdateRequest.IDUser = id
 
 	userResponse := controller.UserService.Update(request.Context(), userUpdateRequest)
 	webResponse := web.WebResponse{
@@ -147,10 +148,10 @@ func (controller *UserController) UpdatePassword(writer http.ResponseWriter, req
 	helper.ReadFromRequestBody(request, &userUpdatePasswordRequest)
 
 	IDUser := params.ByName("IDUser")
-	id, err := strconv.ParseUint(IDUser, 10, 32)
+	id, err := uuid.Parse(IDUser)
 	helper.PanicIfError(err)
 
-	userUpdatePasswordRequest.IDUser = uint(id)
+	userUpdatePasswordRequest.IDUser = id
 
 	controller.UserService.UpdatePassword(request.Context(), userUpdatePasswordRequest)
 	webResponse := web.WebResponse{
