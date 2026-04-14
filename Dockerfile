@@ -15,7 +15,7 @@ FROM alpine:latest AS build-release-stage
 WORKDIR /
 
 COPY --from=build-stage /restaurant /restaurant
-COPY --from=build-stage /app/api.config api.config
+COPY --from=build-stage /app/docker.api.config api.config
 COPY --from=build-stage /app/publicKey publicKey
 COPY --from=build-stage /app/privateKey privateKey
 
